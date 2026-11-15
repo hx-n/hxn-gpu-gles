@@ -5,19 +5,18 @@
 [![hxcpp](https://github.com/hx-n/hxn-gpu-gles/actions/workflows/hxcpp.yml/badge.svg)](https://github.com/hx-n/hxn-gpu-gles/actions/workflows/hxcpp.yml)
 [![CPPIA](https://github.com/hx-n/hxn-gpu-gles/actions/workflows/cppia.yml/badge.svg)](https://github.com/hx-n/hxn-gpu-gles/actions/workflows/cppia.yml)
 
-OpenGL ES 3.0 for Haxe on Ash, HashLink, hxcpp and CPPIA, over EGL: for
-Android devices without Vulkan, for embedded Linux, and for desktops through
-Mesa or [ANGLE](https://chromium.googlesource.com/angle/angle). It keeps
-OpenGL ES's own conventions: a display makes contexts, a context makes
-buffers, textures, samplers, programs, vertex arrays and framebuffers, and
-draws bind them by texture unit and uniform buffer binding point.
-Synchronization is OpenGL ES's: the driver orders the commands, and a program
-waits only to read results on the CPU.
+OpenGL ES 3.0 bindings for Haxe on Ash, HashLink, hxcpp and CPPIA, over EGL.
+It targets Android devices without Vulkan, embedded Linux, and desktops
+through Mesa or [ANGLE](https://chromium.googlesource.com/angle/angle). The
+API follows OpenGL ES: an EGL `Display` and `Context`, buffers, textures,
+samplers, programs, vertex arrays and framebuffers, bound by texture unit and
+uniform buffer binding point. OpenGL ES orders commands itself, so there are
+no barriers; you wait only to read results on the CPU.
 
-Shaders come from [hxnsl](https://github.com/hx-n/hxnsl), which writes GLSL ES
-3.00 at compile time and reports what each stage binds in
-`GLSL_BINDINGS`. `Bindings` assigns those binding points and units, so
-nothing queries a program for its resources at run time.
+Shaders come from [hxnsl](https://github.com/hx-n/hxnsl), which generates GLSL
+ES 3.00 at compile time and lists each stage's bindings in `GLSL_BINDINGS`.
+`Bindings` assigns the binding points and texture units from it, so no
+program is queried for its resources at run time.
 
 ```haxe
 import gpu.gles.*;
