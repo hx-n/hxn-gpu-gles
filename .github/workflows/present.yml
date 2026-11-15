@@ -1,0 +1,38 @@
+name: Present
+
+# A window surface: hxn-window opens a window on a virtual X display, and Mesa
+# renders into it with llvmpipe.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  present:
+    name: Present, Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+        with:
+          runtime: ash
+      # hxn-window's libraries on Linux, and a virtual X display.
+      - run: |
+          sudo apt-get install -y libxkbcommon-x11-0 libxcursor1 libxrandr2 libxi6 libudev1 xvfb xauth
+          haxelib install hxn-window --always
+      - name: Build and run on Ash
+        run: |
+          hxn build hl
+          dir=target/hxn/gpu_gles/hl
+          haxe "$dir/build.hxml" -lib hxn-window -cp examples/present -main Main -hl "$dir/present.hl"
+          (cd "$dir" && xvfb-run -a ash present.hl) | tee present.txt
+          grep -q '^present: 3 frames' present.txt

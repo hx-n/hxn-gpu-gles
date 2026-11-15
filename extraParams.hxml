@@ -1,0 +1,2 @@
+--macro hxn.Bind.lib("gpu_gles")
+--macro gpu.gles.Shaders.register()

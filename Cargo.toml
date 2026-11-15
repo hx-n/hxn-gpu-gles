@@ -1,0 +1,31 @@
+[package]
+name = "hxn-gpu-gles"
+version = "0.1.0"
+edition = "2024"
+description = "OpenGL ES 3 for Haxe over EGL: contexts, buffers, textures, samplers, programs, vertex arrays and framebuffers"
+repository = "https://github.com/hx-n/hxn-gpu-gles"
+license = "Apache-2.0"
+keywords = ["opengl-es", "gles", "egl", "gpu", "haxe", "graphics", "glsl", "linux", "android", "native"]
+
+[lib]
+name = "hxn_gpu_gles"
+
+[package.metadata.hxn]
+# The native library is `gpu_gles.hdll` or `libgpu_gles.a`.
+library = "gpu_gles"
+haxelib = "hxn-gpu-gles"
+contributors = ["darmie", "rayzor"]
+releasenote = "First release: EGL displays and contexts, headless or on a window, buffers, textures, samplers, programs from hxnsl's GLSL ES 3.00 with their binding points and texture units, vertex arrays, framebuffers, and a future for the GPU finishing."
+# The check `hxn check` and `hxn run` build.
+haxe = "examples/check"
+haxe-flags = ["-lib", "hxnsl"]
+# Registers hxnsl's GLSL target for gpu.gles.Shader, from sources/.
+init = ["gpu.gles.Shaders.register()"]
+
+[dependencies]
+hxn = { git = "https://github.com/hx-n/hxn.git", tag = "v0.3.2" }
+hxn-future = { git = "https://github.com/hx-n/hxn.git", tag = "v0.3.2" }
+glow = "0.18"
+# Loads EGL at run time, so the library links against no GL.
+khronos-egl = { version = "6", features = ["dynamic"] }
+libloading = "0.8"

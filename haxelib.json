@@ -1,0 +1,11 @@
+{
+  "name": "hxn-gpu-gles",
+  "version": "0.1.0",
+  "description": "OpenGL ES 3 for Haxe over EGL: contexts, buffers, textures, samplers, programs, vertex arrays and framebuffers",
+  "url": "https://github.com/hx-n/hxn-gpu-gles",
+  "license": "Apache",
+  "tags": ["opengl-es", "gles", "egl", "gpu", "haxe", "graphics", "glsl", "linux", "android", "native"],
+  "contributors": ["darmie", "rayzor"],
+  "releasenote": "First release: EGL displays and contexts, headless or on a window, buffers, textures, samplers, programs from hxnsl's GLSL ES 3.00 with their binding points and texture units, vertex arrays, framebuffers, and a future for the GPU finishing.",
+  "dependencies": { "hxn": "0.3.2" }
+}
