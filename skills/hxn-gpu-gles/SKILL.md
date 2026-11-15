@@ -18,8 +18,8 @@ Prebuilt for Linux x86-64 and ARM64, macOS arm64, Windows x86-64, and as
 static libraries for Intel macOS (hxcpp) and Android; a program needs no Rust.
 EGL and OpenGL ES load at run time: Mesa's on Linux (`libegl1 libgles2
 libegl-mesa0`), the system's on Android. On macOS and Windows set
-`HXN_GPU_GLES_EGL` to ANGLE's `libEGL` (Chrome and Electron apps ship it);
-`libGLESv2` loads from beside it, or from `HXN_GPU_GLES_GLES`.
+`HXN_GPU_GLES_EGL` to ANGLE's `libEGL` (Electron's releases up to 43 include
+it); `libGLESv2` loads from beside it, or from `HXN_GPU_GLES_GLES`.
 
 ## Use
 

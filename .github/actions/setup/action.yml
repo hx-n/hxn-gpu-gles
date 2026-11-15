@@ -91,19 +91,27 @@ runs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libegl1 libgles2 libegl-mesa0 libgl1-mesa-dri
-    # On macOS and Windows, ANGLE's EGL and OpenGL ES, from the Chrome the runner has.
+    # On macOS and Windows, ANGLE's EGL and OpenGL ES, from Electron's release:
+    # 43 is the last to ship them as separate libraries.
     - if: runner.os == 'macOS'
       shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
-        egl="$(find "/Applications/Google Chrome.app/Contents/Frameworks" -name libEGL.dylib | head -1)"
-        test -n "$egl"
-        echo "HXN_GPU_GLES_EGL=$egl" >> "$GITHUB_ENV"
+        dir="$RUNNER_TEMP/angle"
+        gh release download v43.8.3 --repo electron/electron --pattern 'electron-v43.8.3-darwin-arm64.zip' --dir "$dir"
+        libs='Electron.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries'
+        unzip -q -j "$dir"/electron-*.zip "$libs/libEGL.dylib" "$libs/libGLESv2.dylib" -d "$dir"
+        echo "HXN_GPU_GLES_EGL=$dir/libEGL.dylib" >> "$GITHUB_ENV"
     - if: runner.os == 'Windows'
       shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
-        egl="$(find "/c/Program Files/Google/Chrome/Application" -name libEGL.dll | head -1)"
-        test -n "$egl"
-        echo "HXN_GPU_GLES_EGL=$(cygpath -w "$egl")" >> "$GITHUB_ENV"
+        dir="$(cygpath -u "$RUNNER_TEMP")/angle"
+        gh release download v43.8.3 --repo electron/electron --pattern 'electron-v43.8.3-win32-x64.zip' --dir "$dir"
+        7z e -y -o"$(cygpath -w "$dir")" "$(cygpath -w "$(ls "$dir"/electron-*.zip)")" libEGL.dll libGLESv2.dll > /dev/null
+        echo "HXN_GPU_GLES_EGL=$(cygpath -w "$dir/libEGL.dll")" >> "$GITHUB_ENV"
     # hxnsl, which writes the check's shaders, with its tool prebuilt.
     - shell: bash
       run: haxelib install hxnsl --always

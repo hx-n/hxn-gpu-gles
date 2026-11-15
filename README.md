@@ -62,9 +62,11 @@ needs no Rust.
 The library loads EGL and OpenGL ES when a display opens, and links against
 neither. On Linux they are Mesa's (`libegl1 libgles2 libegl-mesa0`), and on
 Android the system's. macOS and Windows have no EGL of their own: point
-`HXN_GPU_GLES_EGL` at ANGLE's `libEGL`, which Chrome and Electron apps ship,
-and the library loads ANGLE's `libGLESv2` from beside it. `HXN_GPU_GLES_GLES`
-names OpenGL ES's library when it is elsewhere.
+`HXN_GPU_GLES_EGL` at ANGLE's `libEGL`, and the library loads ANGLE's
+`libGLESv2` from beside it. Electron's releases up to 43 include both, beside
+the Electron framework on macOS and `electron.exe` on Windows; Chrome and
+later Electron link ANGLE in. `HXN_GPU_GLES_GLES` names OpenGL ES's library
+when it is elsewhere.
 
 ## Classes
 
@@ -143,7 +145,7 @@ Requires the [hxn](https://github.com/hx-n/hxn) CLI, Rust, Haxe 4.3, hxnsl,
 and EGL with OpenGL ES 3.0. `hxn check` builds the binding and runs
 `examples/check` on each runtime named, and fails unless every run passes and
 prints the same output. CI runs it on Linux with Mesa's llvmpipe, and on
-macOS and Windows with ANGLE from the runner's Chrome:
+macOS and Windows with ANGLE from Electron 43.8.3:
 
 ```
 hxn check hl --vm ash

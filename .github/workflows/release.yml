@@ -74,7 +74,7 @@ jobs:
 
   # What a Haxe developer does, with no Rust: install the ZIP and build the
   # check against it, then run it on Ash and hxcpp, with Mesa's OpenGL ES on
-  # Linux and the runner's Chrome's ANGLE on macOS.
+  # Linux and Electron's ANGLE on macOS.
   try:
     name: try, ${{ matrix.os }}
     needs: haxelib
@@ -95,11 +95,16 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libegl1 libgles2 libegl-mesa0 libgl1-mesa-dri
+      # ANGLE's EGL and OpenGL ES, from Electron's release.
       - if: runner.os == 'macOS'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          egl="$(find "/Applications/Google Chrome.app/Contents/Frameworks" -name libEGL.dylib | head -1)"
-          test -n "$egl"
-          echo "HXN_GPU_GLES_EGL=$egl" >> "$GITHUB_ENV"
+          dir="$RUNNER_TEMP/angle"
+          gh release download v43.8.3 --repo electron/electron --pattern 'electron-v43.8.3-darwin-arm64.zip' --dir "$dir"
+          libs='Electron.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Libraries'
+          unzip -q -j "$dir"/electron-*.zip "$libs/libEGL.dylib" "$libs/libGLESv2.dylib" -d "$dir"
+          echo "HXN_GPU_GLES_EGL=$dir/libEGL.dylib" >> "$GITHUB_ENV"
       - if: runner.os == 'Windows' || (runner.os == 'Linux' && runner.arch != 'ARM64')
         uses: krdlab/setup-haxe@v1
         with:

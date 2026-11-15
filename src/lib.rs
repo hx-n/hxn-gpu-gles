@@ -210,8 +210,6 @@ pub struct Display {
 fn load() -> Result<(Egl, Option<libloading::Library>), String> {
     let (egl_name, gles_name) = library_names();
     let egl_path = std::env::var("HXN_GPU_GLES_EGL").unwrap_or_else(|_| egl_name.to_string());
-    let egl = unsafe { Egl::load_required_from_filename(&egl_path) }
-        .map_err(|e| format!("loading EGL from {egl_path}: {e}"))?;
     // OpenGL ES beside EGL when EGL came from a path, else by its usual name.
     let gles_path = std::env::var("HXN_GPU_GLES_GLES").unwrap_or_else(|_| {
         match std::path::Path::new(&egl_path).parent() {
@@ -221,7 +219,11 @@ fn load() -> Result<(Egl, Option<libloading::Library>), String> {
             _ => gles_name.to_string(),
         }
     });
+    // Loaded first: ANGLE's EGL imports OpenGL ES's library by name, which Windows resolves
+    // from the program's directory and PATH but takes from the libraries already loaded.
     let gles = unsafe { libloading::Library::new(&gles_path) }.ok();
+    let egl = unsafe { Egl::load_required_from_filename(&egl_path) }
+        .map_err(|e| format!("loading EGL from {egl_path}: {e}"))?;
     Ok((egl, gles))
 }
 
