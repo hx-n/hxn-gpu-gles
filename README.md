@@ -100,10 +100,21 @@ var display = Display.native(0x31D5, window.raw(2));    // EGL_PLATFORM_X11_KHR,
 var context = display.createWindowContext(window.raw(0), haxe.Int64.toInt(window.raw(1)));
 ```
 
-`visual` picks the EGL config of the window's X11 visual; 0 takes any, as on
-Android, where `window` is the `ANativeWindow*` and the display is
-`Display.native(0, 0)`. On Wayland, EGL takes a `wl_egl_window`, which
-hxn-window does not make.
+`visual` picks the EGL config of the window's X11 visual; 0 takes any. The
+other window systems take `Display.native(0, 0)`, the default display, and
+`createWindowContext(window.raw(0), 0)`:
+
+- Android: `window` is the `ANativeWindow*`.
+- Windows through ANGLE: `window` is the `HWND`.
+- macOS through ANGLE: `window` is the `NSView`, which gets a `CAMetalLayer`
+  that ANGLE renders into.
+
+Wayland takes `Display.native(0x31D8, window.raw(2))`
+(`EGL_PLATFORM_WAYLAND_KHR`, the `wl_display`) and
+`createWaylandContext(window.raw(0), width, height)`, which makes the
+`wl_egl_window` EGL renders the `wl_surface` through, from libwayland-egl.
+`Context.resizeWindow` follows the window's size there; on the other window
+systems the window sets it.
 [`examples/present/Main.hx`](https://github.com/hx-n/hxn-gpu-gles/blob/main/examples/present/Main.hx)
 presents to an X11 window, and CI runs it under Xvfb.
 

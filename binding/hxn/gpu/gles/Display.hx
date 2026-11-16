@@ -59,6 +59,14 @@ class Display {
 		return Context.hxnAdopt(HxnGpuGlesNative.display_create_window_context(hxnRaw, window, visual));
 
 	/**
+		A context whose default framebuffer is a Wayland window: `surface` is its `wl_surface`,
+		which hxn-window's `raw(0)` gives, on a display from `native(0x31D8, raw(2))`
+		(`EGL_PLATFORM_WAYLAND_KHR`). `Context.resizeWindow` follows the window's size.
+	**/
+	public function createWaylandContext(surface:haxe.Int64, width:Int, height:Int):Context
+		return Context.hxnAdopt(HxnGpuGlesNative.display_create_wayland_context(hxnRaw, surface, width, height));
+
+	/**
 		Releases the native value now. The collector does it otherwise. Using
 		this object afterwards throws.
 	**/

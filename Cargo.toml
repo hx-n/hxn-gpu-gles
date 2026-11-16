@@ -1,6 +1,6 @@
 [package]
 name = "hxn-gpu-gles"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "OpenGL ES 3 for Haxe over EGL: contexts, buffers, textures, samplers, programs, vertex arrays and framebuffers"
 repository = "https://github.com/hx-n/hxn-gpu-gles"
@@ -15,7 +15,7 @@ name = "hxn_gpu_gles"
 library = "gpu_gles"
 haxelib = "hxn-gpu-gles"
 contributors = ["darmie", "rayzor"]
-releasenote = "Moves to the hxn.gpu.gles package, on hxn 0.3.5."
+releasenote = "Presents to more windows: Wayland through createWaylandContext and resizeWindow, and AppKit views on macOS, which get the CAMetalLayer ANGLE renders into."
 # The check `hxn check` and `hxn run` build.
 haxe = "examples/check"
 haxe-flags = ["-lib", "hxnsl"]
@@ -29,3 +29,7 @@ glow = "0.18"
 # Loads EGL at run time, so the library links against no GL.
 khronos-egl = { version = "6", features = ["dynamic"] }
 libloading = "0.8"
+
+# ANGLE on macOS presents to a CALayer, which raw-window-metal puts on a window's NSView.
+[target.'cfg(target_os = "macos")'.dependencies]
+raw-window-metal = "0.4"

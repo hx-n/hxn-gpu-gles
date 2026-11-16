@@ -16,9 +16,11 @@ hxn_status hxn_gpu_gles_display_version(hxn_handle *self, hxn_buf *out, hxn_buf 
 hxn_status hxn_gpu_gles_display_extensions(hxn_handle *self, hxn_buf *out, hxn_buf *err);
 hxn_status hxn_gpu_gles_display_create_context(hxn_handle *self, hxn_handle **out, hxn_buf *err);
 hxn_status hxn_gpu_gles_display_create_window_context(hxn_handle *self, int64_t window, int32_t visual, hxn_handle **out, hxn_buf *err);
+hxn_status hxn_gpu_gles_display_create_wayland_context(hxn_handle *self, int64_t surface, int32_t width, int32_t height, hxn_handle **out, hxn_buf *err);
 hxn_status hxn_gpu_gles_display_drop(hxn_handle *self, hxn_buf *err);
 
 /* Context */
+hxn_status hxn_gpu_gles_context_resize_window(hxn_handle *self, int32_t width, int32_t height, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_make_current(hxn_handle *self, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_swap_buffers(hxn_handle *self, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_swap_interval(hxn_handle *self, int32_t interval, hxn_buf *err);

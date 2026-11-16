@@ -68,9 +68,21 @@ inline void *display_create_window_context(void *self, cpp::Int64 window, int vi
 	return out;
 }
 
+inline void *display_create_wayland_context(void *self, cpp::Int64 surface, int width, int height) {
+	hxn_handle *out = 0;
+	hxn_buf err = HXN_BUF_EMPTY;
+	hxn::check(hxn_gpu_gles_display_create_wayland_context((hxn_handle *)self, surface, width, height, &out, &err), err);
+	return out;
+}
+
 inline void display_drop(void *self) {
 	hxn_buf err = HXN_BUF_EMPTY;
 	hxn::check(hxn_gpu_gles_display_drop((hxn_handle *)self, &err), err);
+}
+
+inline void context_resize_window(void *self, int width, int height) {
+	hxn_buf err = HXN_BUF_EMPTY;
+	hxn::check(hxn_gpu_gles_context_resize_window((hxn_handle *)self, width, height, &err), err);
 }
 
 inline void context_make_current(void *self) {

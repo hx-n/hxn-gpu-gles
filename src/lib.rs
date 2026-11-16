@@ -344,7 +344,7 @@ impl Display {
                     .map_err(|e| egl_failed("creating a pbuffer surface", e))?,
             )
         };
-        self.context(config, surface)
+        self.context(config, surface, None)
     }
 
     /// An OpenGL ES 3 context whose default framebuffer is the window `window`, an
@@ -358,17 +358,58 @@ impl Display {
         } else {
             self.config_of_visual(visual)?
         };
+        let native = native_window(window)?;
         let surface = unsafe {
+            self.inner
+                .egl
+                .0
+                .create_window_surface(self.inner.display.0, config, native, None)
+        }
+        .map_err(|e| egl_failed("creating the window surface", e))?;
+        self.context(config, Some(surface), None)
+    }
+
+    /// A context whose default framebuffer is a Wayland window: `surface` is its `wl_surface`,
+    /// which hxn-window's `raw(0)` gives, on a display from `native(0x31D8, raw(2))`
+    /// (`EGL_PLATFORM_WAYLAND_KHR`). `Context.resizeWindow` follows the window's size.
+    pub fn create_wayland_context(
+        &self,
+        surface: i64,
+        width: i32,
+        height: i32,
+    ) -> Result<Context, String> {
+        let wayland = WaylandWindow::create(surface, width, height)?;
+        let config = self.config(egl::WINDOW_BIT)?;
+        let egl_surface = unsafe {
             self.inner.egl.0.create_window_surface(
                 self.inner.display.0,
                 config,
-                window as usize as egl::NativeWindowType,
+                wayland.window as egl::NativeWindowType,
                 None,
             )
         }
-        .map_err(|e| egl_failed("creating the window surface", e))?;
-        self.context(config, Some(surface))
+        .map_err(|e| egl_failed("creating the Wayland window surface", e))?;
+        self.context(config, Some(egl_surface), Some(wayland))
     }
+}
+
+/// The `EGLNativeWindowType` of a window handle. On macOS that is ANGLE's `CALayer`: an
+/// `NSView`, as hxn-window gives, gets a `CAMetalLayer`, and a layer is taken as it is.
+#[cfg(target_os = "macos")]
+fn native_window(window: i64) -> Result<egl::NativeWindowType, String> {
+    let view = std::ptr::NonNull::new(window as usize as *mut c_void)
+        .ok_or("the window handle is null")?;
+    let layer = match unsafe { raw_window_metal::appkit::metal_layer_from_ns_view(view) } {
+        raw_window_metal::Layer::Existing(layer) | raw_window_metal::Layer::Allocated(layer) => {
+            layer
+        }
+    };
+    Ok(layer as egl::NativeWindowType)
+}
+
+#[cfg(not(target_os = "macos"))]
+fn native_window(window: i64) -> Result<egl::NativeWindowType, String> {
+    Ok(window as usize as egl::NativeWindowType)
 }
 
 impl Display {
@@ -431,6 +472,7 @@ impl Display {
         &self,
         config: egl::Config,
         surface: Option<egl::Surface>,
+        wayland: Option<WaylandWindow>,
     ) -> Result<Context, String> {
         let egl = &self.inner.egl.0;
         let display = self.inner.display.0;
@@ -465,6 +507,7 @@ impl Display {
                 gl: Shared(gl),
                 pending: Mutex::new(Vec::new()),
                 has_pending: AtomicBool::new(false),
+                wayland: Shared(wayland),
             }),
         })
     }
@@ -477,6 +520,54 @@ struct Gl {
     gl: Shared<glow::Context>,
     pending: Mutex<Vec<Name>>,
     has_pending: AtomicBool,
+    // A Wayland window's wl_egl_window, destroyed after the surface made on it.
+    wayland: Shared<Option<WaylandWindow>>,
+}
+
+/// The `wl_egl_window` EGL renders a Wayland surface through, from libwayland-egl.
+struct WaylandWindow {
+    _library: libloading::Library,
+    window: *mut c_void,
+    resize: unsafe extern "C" fn(*mut c_void, i32, i32, i32, i32),
+    destroy: unsafe extern "C" fn(*mut c_void),
+}
+
+impl WaylandWindow {
+    fn create(surface: i64, width: i32, height: i32) -> Result<WaylandWindow, String> {
+        let library = unsafe { libloading::Library::new("libwayland-egl.so.1") }
+            .map_err(|e| format!("loading libwayland-egl: {e}"))?;
+        let symbol = |name: &[u8]| -> Result<*const c_void, String> {
+            unsafe { library.get::<*const c_void>(name) }
+                .map(|s| *s)
+                .map_err(|e| {
+                    format!(
+                        "libwayland-egl has no {}: {e}",
+                        String::from_utf8_lossy(name)
+                    )
+                })
+        };
+        type Create = unsafe extern "C" fn(*mut c_void, i32, i32) -> *mut c_void;
+        let create: Create = unsafe { std::mem::transmute(symbol(b"wl_egl_window_create")?) };
+        let resize = unsafe { std::mem::transmute(symbol(b"wl_egl_window_resize")?) };
+        let destroy = unsafe { std::mem::transmute(symbol(b"wl_egl_window_destroy")?) };
+        let window =
+            unsafe { create(surface as usize as *mut c_void, width.max(1), height.max(1)) };
+        if window.is_null() {
+            return Err("libwayland-egl made no window for the surface".into());
+        }
+        Ok(WaylandWindow {
+            _library: library,
+            window,
+            resize,
+            destroy,
+        })
+    }
+}
+
+impl Drop for WaylandWindow {
+    fn drop(&mut self) {
+        unsafe { (self.destroy)(self.window) };
+    }
 }
 
 impl Gl {
@@ -548,6 +639,14 @@ pub struct Context {
 
 #[hxn::methods]
 impl Context {
+    /// Sets the size of the window the default framebuffer is, where EGL takes it from the
+    /// program rather than the window system: Wayland. Elsewhere it does nothing.
+    pub fn resize_window(&self, width: i32, height: i32) {
+        if let Some(wayland) = &self.gl.wayland.0 {
+            unsafe { (wayland.resize)(wayland.window, width.max(1), height.max(1), 0, 0) };
+        }
+    }
+
     /// Makes the context current on the calling thread.
     pub fn make_current(&self) -> Result<(), String> {
         let display = &self.gl.display;

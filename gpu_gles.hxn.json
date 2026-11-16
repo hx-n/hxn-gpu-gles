@@ -111,6 +111,15 @@
           "returns": "Context",
           "fallible": true,
           "blocking": false
+        },
+        {
+          "name": "create_wayland_context",
+          "docs": "A context whose default framebuffer is a Wayland window: `surface` is its `wl_surface`,\nwhich hxn-window's `raw(0)` gives, on a display from `native(0x31D8, raw(2))`\n(`EGL_PLATFORM_WAYLAND_KHR`). `Context.resizeWindow` follows the window's size.",
+          "kind": "method",
+          "params": [{ "name": "surface", "type": "i64" }, { "name": "width", "type": "i32" }, { "name": "height", "type": "i32" }],
+          "returns": "Context",
+          "fallible": true,
+          "blocking": false
         }
       ]
     },
@@ -118,6 +127,15 @@
       "name": "Context",
       "docs": "An OpenGL ES 3 context. Its methods are OpenGL ES's, called on the thread where it is\ncurrent.",
       "methods": [
+        {
+          "name": "resize_window",
+          "docs": "Sets the size of the window the default framebuffer is, where EGL takes it from the\nprogram rather than the window system: Wayland. Elsewhere it does nothing.",
+          "kind": "method",
+          "params": [{ "name": "width", "type": "i32" }, { "name": "height", "type": "i32" }],
+          "returns": "void",
+          "fallible": false,
+          "blocking": false
+        },
         {
           "name": "make_current",
           "docs": "Makes the context current on the calling thread.",

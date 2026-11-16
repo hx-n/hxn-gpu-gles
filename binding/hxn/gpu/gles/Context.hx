@@ -16,6 +16,13 @@ class Context {
 		return made;
 	}
 
+	/**
+		Sets the size of the window the default framebuffer is, where EGL takes it from the
+		program rather than the window system: Wayland. Elsewhere it does nothing.
+	**/
+	public function resizeWindow(width:Int, height:Int):Void
+		HxnGpuGlesNative.context_resize_window(hxnRaw, width, height);
+
 	/** Makes the context current on the calling thread. **/
 	public function makeCurrent():Void
 		HxnGpuGlesNative.context_make_current(hxnRaw);
