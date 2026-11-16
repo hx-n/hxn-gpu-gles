@@ -4,7 +4,7 @@
   "description": "OpenGL ES 3 for Haxe over EGL: contexts, buffers, textures, samplers, programs, vertex arrays and framebuffers",
   "url": "https://github.com/hx-n/hxn-gpu-gles",
   "license": "Apache",
-  "tags": ["opengl-es", "gles", "egl", "gpu", "haxe", "graphics", "glsl", "linux", "android", "native"],
+  "tags": ["opengl-es", "gles", "egl", "gpu", "haxe", "graphics", "glsl", "linux", "android", "native", "hxcpp", "hashlink", "cross"],
   "contributors": ["darmie", "rayzor"],
   "releasenote": "Presents to more windows: Wayland through createWaylandContext and resizeWindow, and AppKit views on macOS, which get the CAMetalLayer ANGLE renders into.",
   "dependencies": { "hxn": "0.3.5" }

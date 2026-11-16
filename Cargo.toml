@@ -5,7 +5,7 @@ edition = "2024"
 description = "OpenGL ES 3 for Haxe over EGL: contexts, buffers, textures, samplers, programs, vertex arrays and framebuffers"
 repository = "https://github.com/hx-n/hxn-gpu-gles"
 license = "Apache-2.0"
-keywords = ["opengl-es", "gles", "egl", "gpu", "haxe", "graphics", "glsl", "linux", "android", "native"]
+keywords = ["opengl-es", "gles", "egl", "gpu", "haxe", "graphics", "glsl", "linux", "android", "native", "hxcpp", "hashlink", "cross"]
 
 [lib]
 name = "hxn_gpu_gles"
