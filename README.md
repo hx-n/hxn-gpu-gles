@@ -19,12 +19,12 @@ ES 3.00 at compile time and lists each stage's bindings in `GLSL_BINDINGS`.
 program is queried for its resources at run time.
 
 ```haxe
-import gpu.gles.*;
+import hxn.gpu.gles.*;
 
 var display = Display.headless();
 var context = display.createContext();                    // current on this thread
 var bindings = new Bindings(Tinted.GLSL_BINDINGS);         // an hxnsl shader
-var program = gpu.gles.Shaders.program(context, Tinted.GLSL_VERTEX, Tinted.GLSL_FRAGMENT, bindings);
+var program = hxn.gpu.gles.Shaders.program(context, Tinted.GLSL_VERTEX, Tinted.GLSL_FRAGMENT, bindings);
 var vertices = context.createVertexArray();
 vertices.attribute(Tinted.INPUT_position, positions, 2, ComponentType.Float, false, 8, 0);
 var target = context.createTexture(width, height, TextureFormat.Rgba8);
@@ -69,7 +69,7 @@ when it is elsewhere.
 
 ## Classes
 
-All in the package `gpu.gles`:
+All in the package `hxn.gpu.gles`:
 
 | Class | |
 |---|---|
@@ -122,7 +122,7 @@ already. `finish()` is the blocking form.
 
 ## Shaders from hxnsl
 
-A shader for this driver implements `gpu.gles.Shader`, which extends
+A shader for this driver implements `hxn.gpu.gles.Shader`, which extends
 `hxnsl.Shader` and gets hxnsl's `GLSL_VERTEX`, `GLSL_FRAGMENT` and
 `GLSL_BINDINGS`. A compute shader, or one with storage buffers, has
 `GLSL_MISSING` instead, since OpenGL ES 3.0 cannot run it.
@@ -131,7 +131,7 @@ A shader for this driver implements `gpu.gles.Shader`, which extends
   uniform block and a texture unit for each texture with its sampler. It
   gives them by hxnsl's group and binding: `uniformBlock(group, binding)` and
   `textureUnit(group, binding)`.
-- `gpu.gles.Shaders.program(context, vertex, fragment, bindings)` links the
+- `hxn.gpu.gles.Shaders.program(context, vertex, fragment, bindings)` links the
   program and assigns them to it by the names hxnsl gives each stage.
 - Vertex inputs have explicit locations, which are hxnsl's `INPUT_` constants.
 

@@ -1,6 +1,6 @@
-import gpu.gles.*;
-import window.Window;
-import window.WindowAttributes;
+import hxn.gpu.gles.*;
+import hxn.window.Window;
+import hxn.window.WindowAttributes;
 
 /**
 	Presents to a window: a context on an hxn-window window on Xlib, three

@@ -12,7 +12,7 @@ use glow::HasContext;
 use hxn_future::Future;
 use khronos_egl as egl;
 
-hxn::package!("gpu.gles");
+hxn::package!("hxn.gpu.gles");
 
 type Egl = egl::DynamicInstance<egl::EGL1_4>;
 

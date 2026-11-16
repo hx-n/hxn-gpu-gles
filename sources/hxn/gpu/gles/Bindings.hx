@@ -1,4 +1,4 @@
-package gpu.gles;
+package hxn.gpu.gles;
 
 #if (!macro && hxnsl)
 import hxnsl.Layout.GlslBindings;

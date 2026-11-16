@@ -1,7 +1,7 @@
 {
   "hxn": 1,
   "library": "gpu_gles",
-  "package": "gpu.gles",
+  "package": "hxn.gpu.gles",
   "enums": [
     {
       "name": "TextureFormat",

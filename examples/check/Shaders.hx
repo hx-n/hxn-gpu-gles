@@ -1,5 +1,5 @@
 /** Fills what it covers with `tint`. **/
-class Tinted implements gpu.gles.Shader {
+class Tinted implements hxn.gpu.gles.Shader {
 	static var SRC = {
 		@input var input : { position : Vec2 };
 		var output : { position : Vec4, color : Vec4 };
@@ -16,7 +16,7 @@ class Tinted implements gpu.gles.Shader {
 }
 
 /** Fills what it covers with `image`, sampled at the vertices' uv. **/
-class Textured implements gpu.gles.Shader {
+class Textured implements hxn.gpu.gles.Shader {
 	static var SRC = {
 		@input var input : { position : Vec2, uv : Vec2 };
 		var output : { position : Vec4, color : Vec4 };

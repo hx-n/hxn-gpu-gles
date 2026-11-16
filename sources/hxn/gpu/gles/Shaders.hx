@@ -1,15 +1,15 @@
-package gpu.gles;
+package hxn.gpu.gles;
 
 /** Shaders from hxnsl, for OpenGL ES. **/
 class Shaders {
 	#if macro
 	/**
-		Registers hxnsl's GLSL target for `gpu.gles.Shader`. The package's
+		Registers hxnsl's GLSL target for `hxn.gpu.gles.Shader`. The package's
 		extraParams.hxml runs it; without hxnsl it does nothing.
 	**/
 	public static function register():Void {
 		#if hxnsl
-		hxnsl.Targets.register(new hxnsl.targets.Glsl(), "gpu.gles.Shader");
+		hxnsl.Targets.register(new hxnsl.targets.Glsl(), "hxn.gpu.gles.Shader");
 		#end
 	}
 	#elseif hxnsl
