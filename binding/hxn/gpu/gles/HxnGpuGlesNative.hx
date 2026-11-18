@@ -31,6 +31,8 @@ package hxn.gpu.gles;
 @:noCompletion class HxnGpuGlesNative {
 	static function memory_held():Float;
 	static function memory_wanted():Bool;
+	static function log_level(level:Int):Void;
+	public static function log_take():Null<haxe.io.Bytes>;
 	static function display_headless():hxn.Handle;
 	static function display_native(platform:Int, native:haxe.Int64):hxn.Handle;
 	static function display_vendor(self:hxn.Handle):String;

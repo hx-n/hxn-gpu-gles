@@ -244,6 +244,7 @@ fn open(
                     .split(' ')
                     .any(|e| e == "EGL_KHR_fence_sync")
             });
+    hxn::log::debug!(target: "hxn.gpu.gles", "opened EGL {major}.{minor}, fence sync: {fences}");
     Ok(Display {
         inner: Arc::new(DisplayInner {
             egl: Shared(egl),
@@ -548,8 +549,10 @@ impl WaylandWindow {
         };
         type Create = unsafe extern "C" fn(*mut c_void, i32, i32) -> *mut c_void;
         let create: Create = unsafe { std::mem::transmute(symbol(b"wl_egl_window_create")?) };
-        let resize = unsafe { std::mem::transmute(symbol(b"wl_egl_window_resize")?) };
-        let destroy = unsafe { std::mem::transmute(symbol(b"wl_egl_window_destroy")?) };
+        let resize: unsafe extern "C" fn(*mut c_void, i32, i32, i32, i32) =
+            unsafe { std::mem::transmute(symbol(b"wl_egl_window_resize")?) };
+        let destroy: unsafe extern "C" fn(*mut c_void) =
+            unsafe { std::mem::transmute(symbol(b"wl_egl_window_destroy")?) };
         let window =
             unsafe { create(surface as usize as *mut c_void, width.max(1), height.max(1)) };
         if window.is_null() {

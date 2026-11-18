@@ -7,5 +7,6 @@ package hxn.gpu.gles;
 	a delivery does.
 **/
 class HxnGpuGlesMemory {
+	@:keep static final logging = hxn.Log.attach(level -> HxnGpuGlesNative.log_level(level), () -> HxnGpuGlesNative.log_take());
 	public static final meter = new hxn.Gc.Meter(() -> HxnGpuGlesNative.memory_held(), () -> HxnGpuGlesNative.memory_wanted());
 }

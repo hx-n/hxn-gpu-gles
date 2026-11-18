@@ -28,10 +28,10 @@ When redistributing binaries, retain the applicable notices and license texts.
 | futures-util 0.3.34 | MIT OR Apache-2.0 | [LICENSE-APACHE](licenses/futures-util-0.3.34/LICENSE-APACHE), [LICENSE-MIT](licenses/futures-util-0.3.34/LICENSE-MIT) |
 | glow 0.18.0 | MIT OR Apache-2.0 OR Zlib | [LICENSE-APACHE](licenses/glow-0.18.0/LICENSE-APACHE), [LICENSE-ZLIB](licenses/glow-0.18.0/LICENSE-ZLIB), [LICENSE-MIT](licenses/glow-0.18.0/LICENSE-MIT) |
 | hl_abi 0.1.0 | MIT | [LICENSE-MIT](licenses/hl_abi-0.1.0/LICENSE-MIT), [UPSTREAM-MANIFEST.txt](licenses/hl_abi-0.1.0/UPSTREAM-MANIFEST.txt) |
-| hxn 0.3.5 | Apache-2.0 | [LICENSE](licenses/hxn-0.3.5/LICENSE) |
-| hxn-abi 0.3.5 | Apache-2.0 | [LICENSE](licenses/hxn-abi-0.3.5/LICENSE) |
-| hxn-future 0.3.5 | Apache-2.0 | [LICENSE](licenses/hxn-future-0.3.5/LICENSE) |
-| hxn-macros 0.3.5 | Apache-2.0 | [LICENSE](licenses/hxn-macros-0.3.5/LICENSE) |
+| hxn 0.3.9 | Apache-2.0 | [LICENSE](licenses/hxn-0.3.9/LICENSE) |
+| hxn-abi 0.3.9 | Apache-2.0 | [LICENSE](licenses/hxn-abi-0.3.9/LICENSE) |
+| hxn-future 0.3.9 | Apache-2.0 | [LICENSE](licenses/hxn-future-0.3.9/LICENSE) |
+| hxn-macros 0.3.9 | Apache-2.0 | [LICENSE](licenses/hxn-macros-0.3.9/LICENSE) |
 | js-sys 0.3.107 | MIT OR Apache-2.0 | [LICENSE-APACHE](licenses/js-sys-0.3.107/LICENSE-APACHE), [LICENSE-MIT](licenses/js-sys-0.3.107/LICENSE-MIT) |
 | khronos-egl 6.0.0 | MIT/Apache-2.0 | [LICENSE-APACHE](licenses/khronos-egl-6.0.0/LICENSE-APACHE), [LICENSE-MIT](licenses/khronos-egl-6.0.0/LICENSE-MIT) |
 | krio-core 0.1.0 | MIT OR Apache-2.0 | [LICENSE](licenses/krio-core-0.1.0/LICENSE) |

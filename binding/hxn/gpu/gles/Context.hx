@@ -5,9 +5,10 @@ package hxn.gpu.gles;
 	An OpenGL ES 3 context. Its methods are OpenGL ES's, called on the thread where it is
 	current.
 **/
+@:build(hxn.Log.bind())
 class Context {
 	@:noCompletion public var hxnRaw:hxn.Handle;
-	@:noCompletion static final hxnMemory = HxnGpuGlesMemory.meter;
+	@:keep @:noCompletion static final hxnMemory = HxnGpuGlesMemory.meter;
 
 	/** An object for a value the library returned. **/
 	@:noCompletion public static function hxnAdopt(hxnRaw:hxn.Handle):Context {

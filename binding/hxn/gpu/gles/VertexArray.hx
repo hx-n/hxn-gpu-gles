@@ -2,9 +2,10 @@
 package hxn.gpu.gles;
 
 /** A vertex array: attribute layouts and the buffers they read, and an element buffer. **/
+@:build(hxn.Log.bind())
 class VertexArray {
 	@:noCompletion public var hxnRaw:hxn.Handle;
-	@:noCompletion static final hxnMemory = HxnGpuGlesMemory.meter;
+	@:keep @:noCompletion static final hxnMemory = HxnGpuGlesMemory.meter;
 
 	/** An object for a value the library returned. **/
 	@:noCompletion public static function hxnAdopt(hxnRaw:hxn.Handle):VertexArray {

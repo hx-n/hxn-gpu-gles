@@ -1,6 +1,6 @@
 [package]
 name = "hxn-gpu-gles"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2024"
 description = "OpenGL ES 3 for Haxe over EGL: contexts, buffers, textures, samplers, programs, vertex arrays and framebuffers"
 repository = "https://github.com/hx-n/hxn-gpu-gles"
@@ -15,7 +15,7 @@ name = "hxn_gpu_gles"
 library = "gpu_gles"
 haxelib = "hxn-gpu-gles"
 contributors = ["darmie", "rayzor"]
-releasenote = "Presents to more windows: Wayland through createWaylandContext and resizeWindow, and AppKit views on macOS, which get the CAMetalLayer ANGLE renders into."
+releasenote = "Use hxn 0.3.9 shared logging with application-owned filtering and sinks; retain pinned dependency redistribution notices."
 # The check `hxn check` and `hxn run` build.
 haxe = "examples/check"
 haxe-flags = ["-lib", "hxnsl"]
@@ -23,8 +23,8 @@ haxe-flags = ["-lib", "hxnsl"]
 init = ["hxn.gpu.gles.Shaders.register()"]
 
 [dependencies]
-hxn = { git = "https://github.com/hx-n/hxn.git", tag = "v0.3.5" }
-hxn-future = { git = "https://github.com/hx-n/hxn.git", tag = "v0.3.5" }
+hxn = { git = "https://github.com/hx-n/hxn.git", tag = "v0.3.9" }
+hxn-future = { git = "https://github.com/hx-n/hxn.git", tag = "v0.3.9" }
 glow = "0.18"
 # Loads EGL at run time, so the library links against no GL.
 khronos-egl = { version = "6", features = ["dynamic"] }
