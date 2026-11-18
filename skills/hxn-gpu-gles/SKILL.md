@@ -121,3 +121,6 @@ against both manifests and pins every package and consumer check to that
 revision before publishing. A blank manual input builds only. Retry through
 the current workflow without moving the version tag; Intel packages use an
 Intel runner.
+
+Native CI and release consumer checks use macOS 15 hosts; Intel archives
+use the Intel host image.
