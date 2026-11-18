@@ -112,3 +112,12 @@ Generated adapters deliver native records after calls return. Custom frame loops
 call `hxn.Loop.sync()`; otherwise idle background diagnostics need `hxn.Log.flush()`.
 Keep real-time callbacks free of logging and leave returned errors as exceptions.
 Read the [core logging contract](https://github.com/hx-n/hxn/blob/main/docs/design/logging.md).
+
+## Release retries
+
+The [release workflow](https://github.com/hx-n/hxn-gpu-gles/blob/main/.github/workflows/release.yml)
+accepts `release_tag` on a manual run from main. It validates an existing tag
+against both manifests and pins every package and consumer check to that
+revision before publishing. A blank manual input builds only. Retry through
+the current workflow without moving the version tag; Intel packages use an
+Intel runner.

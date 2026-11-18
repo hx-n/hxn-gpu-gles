@@ -3,18 +3,53 @@ name: release
 # Builds the haxelib: the generated Haxe classes and the native libraries for
 # each platform, so a program needs only Haxe, and tries it on each platform
 # without Rust. A tag `v*` then publishes it as a release asset and submits it
-# to haxelib; run by hand, it is a dry run that keeps the ZIP as an artifact.
+# to haxelib. Manual runs build only unless release_tag selects an existing tag.
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing version tag to publish; blank builds only
+        required: false
+        type: string
 
 defaults:
   run:
     shell: bash
 
 jobs:
+  source:
+    runs-on: ubuntu-latest
+    outputs:
+      revision: ${{ steps.source.outputs.revision }}
+      tag: ${{ steps.source.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag || github.ref }}
+      - id: source
+        env:
+          HXN_RELEASE_TAG: ${{ inputs.release_tag || (github.event_name == 'push' && github.ref_type == 'tag' && github.ref_name) || '' }}
+        run: |
+          python3 - <<'PYTHON'
+          import json, os, re, subprocess, tomllib
+          from pathlib import Path
+          version = tomllib.loads(Path('Cargo.toml').read_text())['package']['version']
+          assert json.loads(Path('haxelib.json').read_text())['version'] == version
+          revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          tag = os.environ['HXN_RELEASE_TAG']
+          if tag:
+              assert re.fullmatch(r'v[0-9]+\.[0-9]+\.[0-9]+', tag), 'Expected an existing v<major>.<minor>.<patch> tag'
+              assert tag == 'v' + version, 'Tag and package versions differ'
+              tagged = subprocess.check_output(['git', 'rev-parse', '--verify', 'refs/tags/' + tag + '^{commit}'], text=True).strip()
+              assert tagged == revision, 'Checkout differs from selected tag'
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('revision=' + revision + '\n' + 'tag=' + tag + '\n')
+          PYTHON
+
   package:
+    needs: source
     name: package, ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
@@ -29,12 +64,13 @@ jobs:
           # Cross-compiled static libraries: hxcpp links one into the program,
           # and Ash links one into a HashLink program for a mobile device. No
           # iOS, which has no EGL.
-          # GitHub has no Intel macOS runner to build an .hdll on, so Intel
-          # Macs get the hxcpp library alone.
-          - { os: macos-latest,  name: macos-x86_64,  runtimes: cpp,    target: x86_64-apple-darwin }
+          # Intel packages retain the supported hxcpp archive.
+          - { os: macos-15-intel, name: macos-x86_64,  runtimes: cpp,    target: x86_64-apple-darwin }
           - { os: ubuntu-latest, name: android,       runtimes: hl cpp, target: aarch64-linux-android }
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source.outputs.revision }}
       - run: python3 scripts/third_party_notices.py --check
       - uses: ./.github/actions/setup
         with:
@@ -48,10 +84,12 @@ jobs:
           path: package
 
   haxelib:
-    needs: package
+    needs: [source, package]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source.outputs.revision }}
       - uses: actions/download-artifact@v4
         with:
           path: parts
@@ -78,7 +116,7 @@ jobs:
   # Linux and Electron's ANGLE on macOS.
   try:
     name: try, ${{ matrix.os }}
-    needs: haxelib
+    needs: [source, haxelib]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -88,6 +126,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ needs.source.outputs.revision }}
           sparse-checkout: examples
       - uses: actions/download-artifact@v4
         with:
@@ -150,20 +189,26 @@ jobs:
           grep -q '^render: 4x4 pixels' hl.txt && grep -q '^render: 4x4 pixels' cpp.txt
 
   publish:
-    needs: [haxelib, try]
-    if: startsWith(github.ref, 'refs/tags/')
+    needs: [source, haxelib, try]
+    if: needs.source.outputs.tag != ''
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.source.outputs.revision }}
       - uses: actions/download-artifact@v4
         with:
           name: haxelib
       - run: echo "ZIP=$(ls hxn-gpu-gles-*.zip)" >> "$GITHUB_ENV"
       - env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" "$ZIP" --title "$GITHUB_REF_NAME" --notes "$(sed -n 's/^releasenote = "\(.*\)"/\1/p' Cargo.toml)"
+          HXN_RELEASE_TAG: ${{ needs.source.outputs.tag }}
+          HXN_RELEASE_REVISION: ${{ needs.source.outputs.revision }}
+        run: |
+          test "$(gh api "repos/$GITHUB_REPOSITORY/commits/$HXN_RELEASE_TAG" --jq .sha)" = "$HXN_RELEASE_REVISION"
+          gh release create "$HXN_RELEASE_TAG" "$ZIP" --title "$HXN_RELEASE_TAG" --notes "$(sed -n 's/^releasenote = "\(.*\)"/\1/p' Cargo.toml)"
       - uses: krdlab/setup-haxe@v1
         with:
           haxe-version: 4.3.6
