@@ -202,6 +202,51 @@ impl Drop for DisplayInner {
 }
 
 /// An EGL display: the connection contexts are made on.
+/// How what is drawn blends into the target. The factors are hxn-gpu's shared codes, from 0
+/// `Zero` to 10 `SrcAlphaSaturated`, and the operations from 0 `Add` to 4 `Max`. With
+/// `enabled` false, drawing writes its color as it is.
+#[hxn::data]
+pub struct Blend {
+    pub enabled: bool,
+    pub color_operation: i32,
+    pub color_source: i32,
+    pub color_destination: i32,
+    pub alpha_operation: i32,
+    pub alpha_source: i32,
+    pub alpha_destination: i32,
+}
+
+// The GL factor of each shared code, in the order of hxn-gpu's `BlendFactor`.
+const BLEND_FACTORS: [u32; 11] = [
+    glow::ZERO,
+    glow::ONE,
+    glow::SRC_COLOR,
+    glow::ONE_MINUS_SRC_COLOR,
+    glow::SRC_ALPHA,
+    glow::ONE_MINUS_SRC_ALPHA,
+    glow::DST_COLOR,
+    glow::ONE_MINUS_DST_COLOR,
+    glow::DST_ALPHA,
+    glow::ONE_MINUS_DST_ALPHA,
+    glow::SRC_ALPHA_SATURATE,
+];
+
+// The GL equation of each shared operation code, from 0 `Add` to 4 `Max`.
+const BLEND_EQUATIONS: [u32; 5] = [
+    glow::FUNC_ADD,
+    glow::FUNC_SUBTRACT,
+    glow::FUNC_REVERSE_SUBTRACT,
+    glow::MIN,
+    glow::MAX,
+];
+
+fn blend_code(table: &[u32], code: i32, what: &str, kind: &str) -> Result<u32, String> {
+    usize::try_from(code)
+        .ok()
+        .and_then(|i| table.get(i).copied())
+        .ok_or_else(|| format!("{what} is {code}, and a {kind} is 0 to {}", table.len() - 1))
+}
+
 #[hxn::interface]
 pub struct Display {
     inner: Arc<DisplayInner>,
@@ -909,6 +954,32 @@ impl Context {
             gl.clear_color(r as f32, g as f32, b as f32, a as f32);
             gl.clear(bits as u32);
         }
+    }
+
+    /// Sets how what is drawn next blends into the target: `glEnable(GL_BLEND)` with
+    /// `glBlendEquationSeparate` and `glBlendFuncSeparate`, or `glDisable(GL_BLEND)`.
+    pub fn set_blend(&self, blend: Blend) -> Result<(), String> {
+        let gl = self.gl.gl();
+        if !blend.enabled {
+            unsafe { gl.disable(glow::BLEND) };
+            return Ok(());
+        }
+        let factor = |code, what| blend_code(&BLEND_FACTORS, code, what, "blend factor");
+        let equation = |code, what| blend_code(&BLEND_EQUATIONS, code, what, "blend operation");
+        let color = equation(blend.color_operation, "the color operation")?;
+        let alpha = equation(blend.alpha_operation, "the alpha operation")?;
+        let sources = [
+            factor(blend.color_source, "the color source")?,
+            factor(blend.color_destination, "the color destination")?,
+            factor(blend.alpha_source, "the alpha source")?,
+            factor(blend.alpha_destination, "the alpha destination")?,
+        ];
+        unsafe {
+            gl.enable(glow::BLEND);
+            gl.blend_equation_separate(color, alpha);
+            gl.blend_func_separate(sources[0], sources[1], sources[2], sources[3]);
+        }
+        Ok(())
     }
 
     pub fn use_program(&self, program: &Program) {

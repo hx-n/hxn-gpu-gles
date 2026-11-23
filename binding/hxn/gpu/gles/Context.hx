@@ -104,6 +104,19 @@ class Context {
 	public function clear(bits:Int, r:Float, g:Float, b:Float, a:Float):Void
 		HxnGpuGlesNative.context_clear(hxnRaw, bits, r, g, b, a);
 
+	/**
+		Sets how what is drawn next blends into the target: `glEnable(GL_BLEND)` with
+		`glBlendEquationSeparate` and `glBlendFuncSeparate`, or `glDisable(GL_BLEND)`.
+	**/
+	public function setBlend(blend:Blend):Void {
+		var blendOut = new haxe.io.BytesBuffer();
+		if (blend == null)
+			throw new haxe.Exception("null where a Blend is needed");
+		blend.hxnWrite(blendOut);
+		var blendBytes = blendOut.getBytes();
+		HxnGpuGlesNative.context_set_blend(hxnRaw, blendBytes);
+	}
+
 	public function useProgram(program:Program):Void
 		HxnGpuGlesNative.context_use_program(hxnRaw, program == null ? null : program.hxnRaw);
 
