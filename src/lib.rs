@@ -201,7 +201,6 @@ impl Drop for DisplayInner {
     }
 }
 
-/// An EGL display: the connection contexts are made on.
 /// How what is drawn blends into the target. The factors are hxn-gpu's shared codes, from 0
 /// `Zero` to 10 `SrcAlphaSaturated`, and the operations from 0 `Add` to 4 `Max`. With
 /// `enabled` false, drawing writes its color as it is.
@@ -247,6 +246,7 @@ fn blend_code(table: &[u32], code: i32, what: &str, kind: &str) -> Result<u32, S
         .ok_or_else(|| format!("{what} is {code}, and a {kind} is 0 to {}", table.len() - 1))
 }
 
+/// An EGL display: the connection contexts are made on.
 #[hxn::interface]
 pub struct Display {
     inner: Arc<DisplayInner>,

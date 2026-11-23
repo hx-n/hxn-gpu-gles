@@ -2,7 +2,6 @@
 package hxn.gpu.gles;
 
 /**
-	An EGL display: the connection contexts are made on.
 	How what is drawn blends into the target. The factors are hxn-gpu's shared codes, from 0
 	`Zero` to 10 `SrcAlphaSaturated`, and the operations from 0 `Add` to 4 `Max`. With
 	`enabled` false, drawing writes its color as it is.
