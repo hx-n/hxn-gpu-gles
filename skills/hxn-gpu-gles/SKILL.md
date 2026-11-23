@@ -59,7 +59,11 @@ context.completed().then(_ -> use(context.readPixels(0, 0, tw, th)));        // 
 
 Window: `Display.native(platform, display)` and
 `createWindowContext(window, visual)`, then `bindDefaultFramebuffer`, draw,
-`swapBuffers`. With hxn-window on Xlib (`platform() == 3`):
+`swapBuffers`. hxnsl's GLSL flips clip space, so a frame drawn into a texture
+shows upright through `context.blitFlipped(framebuffer, w, h)`, which copies it
+into the window with its rows reversed. Scissor with `context.scissorTest(true)`
+and `context.scissor(x, y, w, h)`; turn the test off before clearing or copying
+a whole target. With hxn-window on Xlib (`platform() == 3`):
 `Display.native(0x31D5, window.raw(2))` and
 `createWindowContext(window.raw(0), haxe.Int64.toInt(window.raw(1)))`. On
 Android, Windows and macOS through ANGLE: `Display.native(0, 0)` and

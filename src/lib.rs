@@ -946,6 +946,42 @@ impl Context {
         unsafe { self.gl.gl().scissor(x, y, width, height) };
     }
 
+    /// Turns the scissor test on or off: `glEnable` or `glDisable` of `GL_SCISSOR_TEST`.
+    /// While it is on, drawing, clearing and copies stay inside the `scissor` rectangle.
+    pub fn scissor_test(&self, enabled: bool) {
+        let gl = self.gl.gl();
+        unsafe {
+            if enabled {
+                gl.enable(glow::SCISSOR_TEST);
+            } else {
+                gl.disable(glow::SCISSOR_TEST);
+            }
+        }
+    }
+
+    /// Copies the `width` by `height` color of `framebuffer` into the window with its rows
+    /// reversed, then renders into the window. The scissor test must be off.
+    pub fn blit_flipped(&self, framebuffer: &Framebuffer, width: i32, height: i32) {
+        let gl = self.gl.gl();
+        unsafe {
+            gl.bind_framebuffer(glow::READ_FRAMEBUFFER, Some(framebuffer.name));
+            gl.bind_framebuffer(glow::DRAW_FRAMEBUFFER, None);
+            gl.blit_framebuffer(
+                0,
+                0,
+                width,
+                height,
+                0,
+                height,
+                width,
+                0,
+                glow::COLOR_BUFFER_BIT,
+                glow::NEAREST,
+            );
+            gl.bind_framebuffer(glow::FRAMEBUFFER, None);
+        }
+    }
+
     /// Clears the bound framebuffer's color, depth or stencil: `bits` are `ClearBits` or-ed
     /// together.
     pub fn clear(&self, bits: i32, r: f64, g: f64, b: f64, a: f64) {

@@ -39,6 +39,8 @@ hxn_status hxn_gpu_gles_context_bind_framebuffer(hxn_handle *self, hxn_handle *f
 hxn_status hxn_gpu_gles_context_bind_default_framebuffer(hxn_handle *self, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_viewport(hxn_handle *self, int32_t x, int32_t y, int32_t width, int32_t height, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_scissor(hxn_handle *self, int32_t x, int32_t y, int32_t width, int32_t height, hxn_buf *err);
+hxn_status hxn_gpu_gles_context_scissor_test(hxn_handle *self, int32_t enabled, hxn_buf *err);
+hxn_status hxn_gpu_gles_context_blit_flipped(hxn_handle *self, hxn_handle *framebuffer, int32_t width, int32_t height, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_clear(hxn_handle *self, int32_t bits, double r, double g, double b, double a, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_set_blend(hxn_handle *self, hxn_slice blend, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_use_program(hxn_handle *self, hxn_handle *program, hxn_buf *err);
