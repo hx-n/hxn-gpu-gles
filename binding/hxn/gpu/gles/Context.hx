@@ -98,6 +98,29 @@ class Context {
 		HxnGpuGlesNative.context_scissor(hxnRaw, x, y, width, height);
 
 	/**
+		Clears color attachment `index` of the bound framebuffer to `r`, `g`, `b`, `a`, with
+		`glClearBufferfv`.
+	**/
+	public function clearColorBuffer(index:Int, r:Float, g:Float, b:Float, a:Float):Void
+		HxnGpuGlesNative.context_clear_color_buffer(hxnRaw, index, r, g, b, a);
+
+	/**
+		Clears the depth attachment of the bound framebuffer to `value`. Depth writes are on
+		after it.
+	**/
+	public function clearDepthBuffer(value:Float):Void
+		HxnGpuGlesNative.context_clear_depth_buffer(hxnRaw, value);
+
+	/**
+		Sets the depth test of what is drawn next. With `enabled`, the test passes when
+		`compare` holds between a fragment's depth and the depth in the target, with the codes
+		from 0 `Never` to 7 `Always` that hxn-gpu's drivers share, and with `write` a fragment
+		that passes writes its depth. Without `enabled`, no depth is tested.
+	**/
+	public function setDepth(enabled:Bool, compare:Int, write:Bool):Void
+		HxnGpuGlesNative.context_set_depth(hxnRaw, enabled, compare, write);
+
+	/**
 		Turns the scissor test on or off: `glEnable` or `glDisable` of `GL_SCISSOR_TEST`.
 		While it is on, drawing, clearing and copies stay inside the `scissor` rectangle.
 	**/

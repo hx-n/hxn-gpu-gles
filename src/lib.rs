@@ -921,6 +921,7 @@ impl Context {
         Ok(Framebuffer {
             gl: self.gl.clone(),
             name,
+            colors: u32::from(color.format.attachment() == glow::COLOR_ATTACHMENT0),
         })
     }
 
@@ -944,6 +945,49 @@ impl Context {
 
     pub fn scissor(&self, x: i32, y: i32, width: i32, height: i32) {
         unsafe { self.gl.gl().scissor(x, y, width, height) };
+    }
+
+    /// Clears color attachment `index` of the bound framebuffer to `r`, `g`, `b`, `a`, with
+    /// `glClearBufferfv`.
+    pub fn clear_color_buffer(&self, index: i32, r: f64, g: f64, b: f64, a: f64) {
+        unsafe {
+            self.gl.gl().clear_buffer_f32_slice(
+                glow::COLOR,
+                index as u32,
+                &[r as f32, g as f32, b as f32, a as f32],
+            )
+        };
+    }
+
+    /// Clears the depth attachment of the bound framebuffer to `value`. Depth writes are on
+    /// after it.
+    pub fn clear_depth_buffer(&self, value: f64) {
+        let gl = self.gl.gl();
+        unsafe {
+            gl.depth_mask(true);
+            gl.clear_buffer_f32_slice(glow::DEPTH, 0, &[value as f32]);
+        }
+    }
+
+    /// Sets the depth test of what is drawn next. With `enabled`, the test passes when
+    /// `compare` holds between a fragment's depth and the depth in the target, with the codes
+    /// from 0 `Never` to 7 `Always` that hxn-gpu's drivers share, and with `write` a fragment
+    /// that passes writes its depth. Without `enabled`, no depth is tested.
+    pub fn set_depth(&self, enabled: bool, compare: i32, write: bool) -> Result<(), String> {
+        if !(0..=7).contains(&compare) {
+            return Err(format!("a compare function is 0 to 7, not {compare}"));
+        }
+        let gl = self.gl.gl();
+        unsafe {
+            if enabled {
+                gl.enable(glow::DEPTH_TEST);
+                gl.depth_func(glow::NEVER + compare as u32);
+                gl.depth_mask(write);
+            } else {
+                gl.disable(glow::DEPTH_TEST);
+            }
+        }
+        Ok(())
     }
 
     /// Turns the scissor test on or off: `glEnable` or `glDisable` of `GL_SCISSOR_TEST`.
@@ -1457,10 +1501,49 @@ impl Drop for VertexArray {
 pub struct Framebuffer {
     gl: Arc<Gl>,
     name: glow::Framebuffer,
+    // The number of color attachments, which `glDrawBuffers` draws into.
+    colors: u32,
 }
 
 #[hxn::methods]
-impl Framebuffer {}
+impl Framebuffer {
+    /// Attaches `texture` as the depth attachment when its format is a depth format, and
+    /// otherwise as the next color attachment, which drawing then writes as the next output of
+    /// the fragment shader.
+    pub fn attach(&mut self, texture: &Texture) -> Result<(), String> {
+        let gl = self.gl.gl();
+        let attachment = match texture.format.attachment() {
+            glow::COLOR_ATTACHMENT0 => {
+                let next = glow::COLOR_ATTACHMENT0 + self.colors;
+                self.colors += 1;
+                next
+            }
+            depth => depth,
+        };
+        unsafe {
+            gl.bind_framebuffer(glow::FRAMEBUFFER, Some(self.name));
+            gl.framebuffer_texture_2d(
+                glow::FRAMEBUFFER,
+                attachment,
+                glow::TEXTURE_2D,
+                Some(texture.name),
+                0,
+            );
+            let buffers: Vec<u32> = (0..self.colors)
+                .map(|i| glow::COLOR_ATTACHMENT0 + i)
+                .collect();
+            gl.draw_buffers(&buffers);
+            let status = gl.check_framebuffer_status(glow::FRAMEBUFFER);
+            gl.bind_framebuffer(glow::FRAMEBUFFER, None);
+            if status != glow::FRAMEBUFFER_COMPLETE {
+                return Err(format!(
+                    "the framebuffer is incomplete: status 0x{status:X}"
+                ));
+            }
+        }
+        Ok(())
+    }
+}
 
 impl Drop for Framebuffer {
     fn drop(&mut self) {

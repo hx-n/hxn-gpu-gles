@@ -207,6 +207,21 @@ inline void context_scissor(void *self, int x, int y, int width, int height) {
 	hxn::check(hxn_gpu_gles_context_scissor((hxn_handle *)self, x, y, width, height, &err), err);
 }
 
+inline void context_clear_color_buffer(void *self, int index, double r, double g, double b, double a) {
+	hxn_buf err = HXN_BUF_EMPTY;
+	hxn::check(hxn_gpu_gles_context_clear_color_buffer((hxn_handle *)self, index, r, g, b, a, &err), err);
+}
+
+inline void context_clear_depth_buffer(void *self, double value) {
+	hxn_buf err = HXN_BUF_EMPTY;
+	hxn::check(hxn_gpu_gles_context_clear_depth_buffer((hxn_handle *)self, value, &err), err);
+}
+
+inline void context_set_depth(void *self, bool enabled, int compare, bool write) {
+	hxn_buf err = HXN_BUF_EMPTY;
+	hxn::check(hxn_gpu_gles_context_set_depth((hxn_handle *)self, enabled ? 1 : 0, compare, write ? 1 : 0, &err), err);
+}
+
 inline void context_scissor_test(void *self, bool enabled) {
 	hxn_buf err = HXN_BUF_EMPTY;
 	hxn::check(hxn_gpu_gles_context_scissor_test((hxn_handle *)self, enabled ? 1 : 0, &err), err);
@@ -383,6 +398,11 @@ inline void vertex_array_element_buffer(void *self, void *buffer) {
 inline void vertex_array_drop(void *self) {
 	hxn_buf err = HXN_BUF_EMPTY;
 	hxn::check(hxn_gpu_gles_vertex_array_drop((hxn_handle *)self, &err), err);
+}
+
+inline void framebuffer_attach(void *self, void *texture) {
+	hxn_buf err = HXN_BUF_EMPTY;
+	hxn::check(hxn_gpu_gles_framebuffer_attach((hxn_handle *)self, (hxn_handle *)texture, &err), err);
 }
 
 inline void framebuffer_drop(void *self) {

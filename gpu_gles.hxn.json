@@ -312,6 +312,33 @@
           "blocking": false
         },
         {
+          "name": "clear_color_buffer",
+          "docs": "Clears color attachment `index` of the bound framebuffer to `r`, `g`, `b`, `a`, with\n`glClearBufferfv`.",
+          "kind": "method",
+          "params": [{ "name": "index", "type": "i32" }, { "name": "r", "type": "f64" }, { "name": "g", "type": "f64" }, { "name": "b", "type": "f64" }, { "name": "a", "type": "f64" }],
+          "returns": "void",
+          "fallible": false,
+          "blocking": false
+        },
+        {
+          "name": "clear_depth_buffer",
+          "docs": "Clears the depth attachment of the bound framebuffer to `value`. Depth writes are on\nafter it.",
+          "kind": "method",
+          "params": [{ "name": "value", "type": "f64" }],
+          "returns": "void",
+          "fallible": false,
+          "blocking": false
+        },
+        {
+          "name": "set_depth",
+          "docs": "Sets the depth test of what is drawn next. With `enabled`, the test passes when\n`compare` holds between a fragment's depth and the depth in the target, with the codes\nfrom 0 `Never` to 7 `Always` that hxn-gpu's drivers share, and with `write` a fragment\nthat passes writes its depth. Without `enabled`, no depth is tested.",
+          "kind": "method",
+          "params": [{ "name": "enabled", "type": "bool" }, { "name": "compare", "type": "i32" }, { "name": "write", "type": "bool" }],
+          "returns": "void",
+          "fallible": true,
+          "blocking": false
+        },
+        {
           "name": "scissor_test",
           "docs": "Turns the scissor test on or off: `glEnable` or `glDisable` of `GL_SCISSOR_TEST`.\nWhile it is on, drawing, clearing and copies stay inside the `scissor` rectangle.",
           "kind": "method",
@@ -574,7 +601,17 @@
     {
       "name": "Framebuffer",
       "docs": "A framebuffer with one attachment.",
-      "methods": []
+      "methods": [
+        {
+          "name": "attach",
+          "docs": "Attaches `texture` as the depth attachment when its format is a depth format, and\notherwise as the next color attachment, which drawing then writes as the next output of\nthe fragment shader.",
+          "kind": "mutating",
+          "params": [{ "name": "texture", "type": "Texture" }],
+          "returns": "void",
+          "fallible": true,
+          "blocking": false
+        }
+      ]
     }
   ]
 }

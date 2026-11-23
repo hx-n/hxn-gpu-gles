@@ -1,6 +1,6 @@
 [package]
 name = "hxn-gpu-gles"
-version = "0.3.2"
+version = "0.3.3"
 edition = "2024"
 description = "OpenGL ES 3 for Haxe over EGL: contexts, buffers, textures, samplers, programs, vertex arrays and framebuffers"
 repository = "https://github.com/hx-n/hxn-gpu-gles"
@@ -15,7 +15,7 @@ name = "hxn_gpu_gles"
 library = "gpu_gles"
 haxelib = "hxn-gpu-gles"
 contributors = ["darmie", "rayzor"]
-releasenote = "Blend what a pipeline draws, and add the scissor test and a flipped copy into the window."
+releasenote = "Draw into several color targets in one pass, and test and write depth."
 # The check `hxn check` and `hxn run` build.
 haxe = "examples/check"
 haxe-flags = ["-lib", "hxnsl"]

@@ -63,7 +63,11 @@ Window: `Display.native(platform, display)` and
 shows upright through `context.blitFlipped(framebuffer, w, h)`, which copies it
 into the window with its rows reversed. Scissor with `context.scissorTest(true)`
 and `context.scissor(x, y, w, h)`; turn the test off before clearing or copying
-a whole target. With hxn-window on Xlib (`platform() == 3`):
+a whole target. Several targets and depth: `framebuffer.attach(texture)` adds the next color attachment, or
+the depth attachment for a `Depth32f` texture, and sets the draw buffers;
+`context.clearColorBuffer(index, r, g, b, a)` and `context.clearDepthBuffer(value)` clear
+them; `context.setDepth(enabled, compare, write)` sets the depth test (codes 0 `Never` to 7
+`Always`). One blend state applies to every draw buffer. With hxn-window on Xlib (`platform() == 3`):
 `Display.native(0x31D5, window.raw(2))` and
 `createWindowContext(window.raw(0), haxe.Int64.toInt(window.raw(1)))`. On
 Android, Windows and macOS through ANGLE: `Display.native(0, 0)` and

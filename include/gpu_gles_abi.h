@@ -39,6 +39,9 @@ hxn_status hxn_gpu_gles_context_bind_framebuffer(hxn_handle *self, hxn_handle *f
 hxn_status hxn_gpu_gles_context_bind_default_framebuffer(hxn_handle *self, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_viewport(hxn_handle *self, int32_t x, int32_t y, int32_t width, int32_t height, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_scissor(hxn_handle *self, int32_t x, int32_t y, int32_t width, int32_t height, hxn_buf *err);
+hxn_status hxn_gpu_gles_context_clear_color_buffer(hxn_handle *self, int32_t index, double r, double g, double b, double a, hxn_buf *err);
+hxn_status hxn_gpu_gles_context_clear_depth_buffer(hxn_handle *self, double value, hxn_buf *err);
+hxn_status hxn_gpu_gles_context_set_depth(hxn_handle *self, int32_t enabled, int32_t compare, int32_t write, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_scissor_test(hxn_handle *self, int32_t enabled, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_blit_flipped(hxn_handle *self, hxn_handle *framebuffer, int32_t width, int32_t height, hxn_buf *err);
 hxn_status hxn_gpu_gles_context_clear(hxn_handle *self, int32_t bits, double r, double g, double b, double a, hxn_buf *err);
@@ -83,6 +86,7 @@ hxn_status hxn_gpu_gles_vertex_array_element_buffer(hxn_handle *self, hxn_handle
 hxn_status hxn_gpu_gles_vertex_array_drop(hxn_handle *self, hxn_buf *err);
 
 /* Framebuffer */
+hxn_status hxn_gpu_gles_framebuffer_attach(hxn_handle *self, hxn_handle *texture, hxn_buf *err);
 hxn_status hxn_gpu_gles_framebuffer_drop(hxn_handle *self, hxn_buf *err);
 
 /* What the library has for the host. `wait` gives 1 once something is queued

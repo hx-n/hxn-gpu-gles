@@ -15,6 +15,14 @@ class Framebuffer {
 	}
 
 	/**
+		Attaches `texture` as the depth attachment when its format is a depth format, and
+		otherwise as the next color attachment, which drawing then writes as the next output of
+		the fragment shader.
+	**/
+	public function attach(texture:Texture):Void
+		HxnGpuGlesNative.framebuffer_attach(hxnRaw, texture == null ? null : texture.hxnRaw);
+
+	/**
 		Releases the native value now. The collector does it otherwise. Using
 		this object afterwards throws.
 	**/
