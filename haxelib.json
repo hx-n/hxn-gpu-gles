@@ -6,6 +6,6 @@
   "license": "Apache",
   "tags": ["opengl-es", "gles", "egl", "gpu", "haxe", "graphics", "glsl", "linux", "android", "native", "hxcpp", "hashlink", "cross"],
   "contributors": ["darmie", "rayzor"],
-  "releasenote": "Blend what a render pipeline draws into its target.",
+  "releasenote": "Blend what a pipeline draws, and add the scissor test and a flipped copy into the window.",
   "dependencies": { "hxn": "0.3.9" }
 }

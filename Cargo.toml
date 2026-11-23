@@ -15,7 +15,7 @@ name = "hxn_gpu_gles"
 library = "gpu_gles"
 haxelib = "hxn-gpu-gles"
 contributors = ["darmie", "rayzor"]
-releasenote = "Blend what a render pipeline draws into its target."
+releasenote = "Blend what a pipeline draws, and add the scissor test and a flipped copy into the window."
 # The check `hxn check` and `hxn run` build.
 haxe = "examples/check"
 haxe-flags = ["-lib", "hxnsl"]
