@@ -201,9 +201,9 @@ impl Drop for DisplayInner {
     }
 }
 
-/// How what is drawn blends into the target. The factors are hxn-gpu's shared codes, from 0
-/// `Zero` to 10 `SrcAlphaSaturated`, and the operations from 0 `Add` to 4 `Max`. With
-/// `enabled` false, drawing writes its color as it is.
+/// `Blend` sets how what is drawn blends into the target. The factors are hxn-gpu's shared
+/// codes, from 0 `Zero` to 10 `SrcAlphaSaturated`, and the operations are the codes from 0 `Add`
+/// to 4 `Max`. When `enabled` is false, drawing writes its color as it is.
 #[hxn::data]
 pub struct Blend {
     pub enabled: bool,
@@ -215,7 +215,7 @@ pub struct Blend {
     pub alpha_destination: i32,
 }
 
-// The GL factor of each shared code, in the order of hxn-gpu's `BlendFactor`.
+// Maps each shared factor code to its GL factor, in the order of hxn-gpu's `BlendFactor`.
 const BLEND_FACTORS: [u32; 11] = [
     glow::ZERO,
     glow::ONE,
@@ -230,7 +230,7 @@ const BLEND_FACTORS: [u32; 11] = [
     glow::SRC_ALPHA_SATURATE,
 ];
 
-// The GL equation of each shared operation code, from 0 `Add` to 4 `Max`.
+// Maps each shared operation code, from 0 `Add` to 4 `Max`, to its GL equation.
 const BLEND_EQUATIONS: [u32; 5] = [
     glow::FUNC_ADD,
     glow::FUNC_SUBTRACT,
@@ -992,7 +992,7 @@ impl Context {
         }
     }
 
-    /// Sets how what is drawn next blends into the target: `glEnable(GL_BLEND)` with
+    /// Sets how what is drawn next blends into the target. It calls `glEnable(GL_BLEND)` with
     /// `glBlendEquationSeparate` and `glBlendFuncSeparate`, or `glDisable(GL_BLEND)`.
     pub fn set_blend(&self, blend: Blend) -> Result<(), String> {
         let gl = self.gl.gl();

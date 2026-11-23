@@ -119,7 +119,7 @@ class Context {
 		HxnGpuGlesNative.context_clear(hxnRaw, bits, r, g, b, a);
 
 	/**
-		Sets how what is drawn next blends into the target: `glEnable(GL_BLEND)` with
+		Sets how what is drawn next blends into the target. It calls `glEnable(GL_BLEND)` with
 		`glBlendEquationSeparate` and `glBlendFuncSeparate`, or `glDisable(GL_BLEND)`.
 	**/
 	public function setBlend(blend:Blend):Void {
